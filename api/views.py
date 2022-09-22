@@ -1,11 +1,9 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.response import Response
 from .models import Task
 from .serializers import TaskSerializer
 from rest_framework import viewsets, permissions
 from django.contrib.auth.models import User
-from django.core import serializers
 
 # Create your views here.
 
@@ -36,3 +34,31 @@ class TaskViewSet(viewsets.ModelViewSet):
             serializer.save() 
 
         return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+
+        task_to_edit = self.get_object()
+        
+        data = {
+            'title': request.data.get('title'), 
+            'description': request.data.get('description'), 
+            'priority': request.data.get('priority'), 
+            'state': request.data.get('state'), 
+            'creation_date': request.data.get('creation_date'), 
+            'completion_date': request.data.get('completion_date'), 
+            'assignee': request.data.get('assignee'), 
+            'creator': request.data.get('creator')
+        }
+
+        serializer = TaskSerializer(instance = task_to_edit, data = data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        
+        task_to_delete = self.get_object()
+        task_to_delete.delete()
+        return Response('Task deleted')
