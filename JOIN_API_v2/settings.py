@@ -45,8 +45,11 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
+    'rest_framework.authtoken',
+
     'corsheaders',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,7 +68,7 @@ ROOT_URLCONF = 'JOIN_API_v2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
