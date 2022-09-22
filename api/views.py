@@ -33,6 +33,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
 
+        else: 
+            return Response(serializer.errors)
+
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
