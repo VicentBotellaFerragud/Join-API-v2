@@ -68,7 +68,7 @@ ROOT_URLCONF = 'JOIN_API_v2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': ['JOIN_API_v2/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
