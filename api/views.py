@@ -13,7 +13,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     queryset = Task.objects.all().order_by('id')
     serializer_class = TaskSerializer
-    permission_classes = [] # permissions.IsAuthenticated
+    permission_classes = [permissions.IsAuthenticated] # permissions.IsAuthenticated
 
     def create(self, request):
 
