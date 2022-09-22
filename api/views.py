@@ -24,11 +24,14 @@ class TaskViewSet(viewsets.ModelViewSet):
             'state': request.data.get('state'), 
             'creation_date': request.data.get('creation_date'), 
             'completion_date': request.data.get('completion_date'), 
-            'assignee': request.data.get('assignee') if request.data.get('assignee') else '', 
-            'creator': request.data.get('creator') if request.data.get('creator') else ''
+            'assignee': request.data.get('assignee') if request.data.get('assignee') else request.user, 
+            'creator': request.data.get('creator') if request.data.get('creator') else request.user
         }
 
         serializer = TaskSerializer(data = data)
+
+        if serializer.is_valid():
+            serializer.save()
 
         return Response(serializer.data)
 
