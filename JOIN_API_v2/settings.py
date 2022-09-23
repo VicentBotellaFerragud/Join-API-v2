@@ -79,7 +79,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # When running the app locally 'DIRS' should look like --> 'DIRS': ['templates'],
         # For Pythonanywhere 'DIRS' has to be --> 'DIRS': ['JOIN_API_v2/templates'], Otherwise the server does not find the template.
-        'DIRS': ['JOIN_API_v2/templates'], 
+        'DIRS': [], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
