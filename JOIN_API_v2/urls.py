@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from api.views import TaskViewSet, Login, Logout
+from api.views import TaskViewSet
 from rest_framework.authtoken import views
 
 router = routers.DefaultRouter()
