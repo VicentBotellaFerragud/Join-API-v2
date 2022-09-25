@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer, UserSerializer
+from .serializers import TaskSerializer, UserSerializer, RegisterSerializer, LoginSerializer
 from rest_framework import viewsets, permissions
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,25 +14,57 @@ from django.contrib.auth.forms import AuthenticationForm
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.decorators import action, permission_classes, authentication_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('id')
+class UserViewSet(viewsets.GenericViewSet):
+
+    queryset = User.objects.filter(is_active = True)
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
+
+    @action(detail = False, methods = ['post'])
+    def login(self, request):
+
+        serializer = LoginSerializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        user, token = serializer.save()
+        data = {
+            'user': UserSerializer(user).data,
+            'access_token': token
+        }
+
+        return Response(data, status = status.HTTP_201_CREATED)
+
+    @action(detail = False, methods = ['post'])
+    def register(self, request):
+
+        serializer = RegisterSerializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        user = serializer.save()
+        data = UserSerializer(user).data
+
+        return Response(data, status = status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+
+        header_token = request.headers['Authorization']
+        user = Token.objects.get(key = 'f880035214141ab372011b4ac9caeac214baf567').user
+        print(user)
+        queryset = User.objects.filter(username = "Vincent").order_by('id')
+        serializer = UserSerializer(queryset, many = True)
+        return Response(serializer.data)
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows tasks to be viewed or edited.
     """
     queryset = Task.objects.all().order_by('id')
     serializer_class = TaskSerializer
