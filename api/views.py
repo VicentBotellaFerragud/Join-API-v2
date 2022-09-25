@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, UserSerializer
 from rest_framework import viewsets, permissions
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -17,8 +17,18 @@ from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework import status
+from django.contrib.auth.models import User
 
 # Create your views here.
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('id')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -26,6 +36,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     queryset = Task.objects.all().order_by('id')
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def create(self, request):
 
