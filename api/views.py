@@ -56,9 +56,10 @@ class UserViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
 
         header_token = request.headers['Authorization']
-        user = Token.objects.get(key = 'f880035214141ab372011b4ac9caeac214baf567').user
+        token = header_token[6:]
+        user = Token.objects.get(key = token).user
         print(user)
-        queryset = User.objects.filter(username = "Vincent").order_by('id')
+        queryset = User.objects.filter(username = user.username).order_by('id')
         serializer = UserSerializer(queryset, many = True)
         return Response(serializer.data)
 
