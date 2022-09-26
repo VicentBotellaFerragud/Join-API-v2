@@ -2,32 +2,19 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from .models import Task
 from .serializers import TaskSerializer, UserSerializer, RegisterSerializer, LoginSerializer
-from rest_framework import viewsets, permissions
-from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
-from django.views.generic.edit import FormView
-from django.contrib.auth import login, logout, authenticate
-from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import AuthenticationForm
-from rest_framework.authtoken.models import Token
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
 from django.contrib.auth.models import User
-from rest_framework.decorators import api_view
-from rest_framework.decorators import action, permission_classes, authentication_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
 class UserViewSet(viewsets.GenericViewSet):
 
-    queryset = User.objects.filter(is_active = True)
+    queryset = User.objects.all().order_by('id')
     serializer_class = UserSerializer
 
     @action(detail = False, methods = ['post'])
@@ -36,6 +23,7 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer = LoginSerializer(data = request.data)
         serializer.is_valid(raise_exception = True)
         user, token = serializer.save()
+        
         data = {
             'user': UserSerializer(user).data,
             'access_token': token
@@ -55,13 +43,25 @@ class UserViewSet(viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
 
-        header_token = request.headers['Authorization']
-        token = header_token[6:]
-        user = Token.objects.get(key = token).user
-        print(user)
-        queryset = User.objects.filter(username = user.username).order_by('id')
+        queryset = User.objects.all().order_by('id')
         serializer = UserSerializer(queryset, many = True)
+
         return Response(serializer.data)
+
+    def retrieve(self, request, pk = None):
+
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk = pk)
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        
+        user_to_delete = self.get_object()
+        user_to_delete.delete()
+
+        return Response('User deleted')
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -124,4 +124,19 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         task_to_delete = self.get_object()
         task_to_delete.delete()
+
         return Response('Task deleted')
+
+"""
+    DON'T DELETE IT YET PLEASE
+
+    def list(self, request, *args, **kwargs):
+
+        header_token = request.headers['Authorization']
+        token = header_token[6:]
+        user = Token.objects.get(key = token).user
+        print(user)
+        queryset = User.objects.filter(username = user.username).order_by('id')
+        serializer = UserSerializer(queryset, many = True)
+        return Response(serializer.data)
+"""

@@ -29,7 +29,7 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.Serializer):
 
-    username = serializers.CharField(min_length = 4, max_length = 20, validators=[UniqueValidator(queryset = User.objects.all())])
+    username = serializers.CharField(min_length = 4, max_length = 20, validators = [UniqueValidator(queryset = User.objects.all())])
     password = serializers.CharField(min_length = 8, max_length = 64)
     password_confirmation = serializers.CharField(min_length = 8, max_length = 64)
 
